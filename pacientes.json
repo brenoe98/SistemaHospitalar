@@ -1,1 +1,18 @@
-[]
+[
+    {
+        "Nome": "turuman",
+        "Idade": 22,
+        "CPF": "123212",
+        "Hist\u00f3rico": [
+            "AIDS"
+        ]
+    },
+    {
+        "Nome": "sda",
+        "Idade": 12,
+        "CPF": "123",
+        "Hist\u00f3rico": [
+            "as"
+        ]
+    }
+]

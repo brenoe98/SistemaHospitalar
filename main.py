@@ -20,29 +20,22 @@ def carregar_pacientes():
         return []
 
 
-# ---------------- FUNÇÕES PACIENTES ----------------
+# ---------------- FUNÇÃO CADASTRO ----------------
 
-def cadastrar_paciente(pacientes):
+def cadastrar_paciente(pacientes, nome, idade, cpf, historico):
 
     paciente = {}
 
-    print("\nCadastro de paciente")
-
-    paciente["Nome"] = input("Digite o nome do paciente: ")
-    paciente["Idade"] = int(input("Digite a idade do paciente: "))
-    paciente["CPF"] = input("Digite o CPF do paciente: ")
-
-    paciente["Histórico"] = []
-
-    historico = input("Digite o Histórico do paciente: ")
-
-    paciente["Histórico"].append(historico)
+    paciente["Nome"] = nome
+    paciente["Idade"] = idade
+    paciente["CPF"] = cpf
+    paciente["Histórico"] = [historico]
 
     for p in pacientes:
 
         if p["CPF"] == paciente["CPF"]:
             print("CPF já cadastrado")
-            return
+            return False
 
     pacientes.append(paciente)
 
@@ -50,89 +43,94 @@ def cadastrar_paciente(pacientes):
 
     print("Paciente cadastrado com sucesso!")
 
-
-def buscar_paciente(pacientes):
-
-    busca = input("Digite o nome ou CPF para busca: ")
-
-    encontrado = False
-
-    for p in pacientes:
-
-        if p["Nome"] == busca or p["CPF"] == busca:
-
-            print(f"\nPaciente encontrado: {p}")
-
-            encontrado = True
-
-            break
-
-    if not encontrado:
-        print("Paciente não encontrado")
+    return True
 
 
-def listar_paciente(pacientes):
+# ---------------- JANELA CADASTRO ----------------
 
-    if not pacientes:
-        print("Paciente não encontrado")
+def janela_cadastro(pacientes):
 
-    else:
+    cadastro = tk.Toplevel()
 
-        for p in pacientes:
+    cadastro.title("Cadastro de Paciente")
 
-            print(f"""
-Nome: {p["Nome"]}
-Idade: {p["Idade"]}
-CPF: {p["CPF"]}
+    cadastro.geometry("300x300")
 
--------------------------
-""")
+    # NOME
+    tk.Label(
+        cadastro,
+        text="Nome"
+    ).pack()
 
+    entrada_nome = tk.Entry(cadastro)
 
-def excluir_paciente(pacientes):
+    entrada_nome.pack()
 
-    cpf = input("Digite o CPF do paciente para remover do sistema: ")
+    # IDADE
+    tk.Label(
+        cadastro,
+        text="Idade"
+    ).pack()
 
-    encontrado = False
+    entrada_idade = tk.Entry(cadastro)
 
-    for p in pacientes:
+    entrada_idade.pack()
 
-        if p["CPF"] == cpf:
+    # CPF
+    tk.Label(
+        cadastro,
+        text="CPF"
+    ).pack()
 
-            pacientes.remove(p)
+    entrada_cpf = tk.Entry(cadastro)
 
-            salvar_pacientes(pacientes)
+    entrada_cpf.pack()
 
-            print("Paciente removido com sucesso")
+    # HISTÓRICO
+    tk.Label(
+        cadastro,
+        text="Histórico"
+    ).pack()
 
-            encontrado = True
+    entrada_historico = tk.Entry(cadastro)
 
-            break
+    entrada_historico.pack()
 
-    if not encontrado:
-        print("Paciente não encontrado")
+    # FUNÇÃO SALVAR
+    def salvar():
 
+        nome = entrada_nome.get()
 
-def editar_paciente(pacientes):
+        idade = int(entrada_idade.get())
 
-    busca = input("Digite o nome do paciente que sofrerá a alteração: ")
+        cpf = entrada_cpf.get()
 
-    for p in pacientes:
+        historico = entrada_historico.get()
 
-        if p["Nome"] == busca:
+        sucesso = cadastrar_paciente(
+            pacientes,
+            nome,
+            idade,
+            cpf,
+            historico
+        )
 
-            print("Paciente encontrado")
+        if sucesso:
+            cadastro.destroy()
 
-            p["Nome"] = input("Novo nome: ")
+    # BOTÃO SALVAR
+    tk.Button(
+        cadastro,
+        text="Salvar paciente",
+        command=salvar
+    ).pack(pady=10)
+# ---------------- janela listar ----------------
 
-            p["Idade"] = int(input("Nova idade: "))
+def janela_busca(pacientes):
 
-            salvar_pacientes(pacientes)
+    busca = tk.Toplevel()
 
-            print("Paciente atualizado com sucesso")
-
-            break
-
+    busca.title("Buscar paciente")
 
 # ---------------- MENU ----------------
 
@@ -150,55 +148,30 @@ def entrar():
 
     saudacao = tk.Label(
         menu,
-        text=f"Olá Dr. {nome}"
+        text=f"Olá Dr. {nome} o que deseja fazer?"
     )
 
-    saudacao.pack()
+    saudacao.pack(pady=10)
 
     # BOTÃO CADASTRAR
     botao_cadastrar = tk.Button(
         menu,
         text="1 - Cadastrar paciente",
-        command=lambda: cadastrar_paciente(pacientes)
+        command=lambda: janela_cadastro(pacientes)
     )
 
-    botao_cadastrar.pack()
+    botao_cadastrar.pack(pady=5)
 
-    # BOTÃO BUSCAR
-    botao_buscar = tk.Button(
+
+# BOTÃO BUSCA
+    botao_busca = tk.Button(
         menu,
-        text="2 - Buscar paciente",
-        command=lambda: buscar_paciente(pacientes)
+        text="1 - Buscar pacientes",
+        command=lambda: janela_busca(pacientes)
     )
 
-    botao_buscar.pack()
+    botao_busca.pack(pady=5)
 
-    # BOTÃO LISTAR
-    botao_listar = tk.Button(
-        menu,
-        text="3 - Listar pacientes",
-        command=lambda: listar_paciente(pacientes)
-    )
-
-    botao_listar.pack()
-
-    # BOTÃO EXCLUIR
-    botao_excluir = tk.Button(
-        menu,
-        text="4 - Excluir paciente",
-        command=lambda: excluir_paciente(pacientes)
-    )
-
-    botao_excluir.pack()
-
-    # BOTÃO EDITAR
-    botao_editar = tk.Button(
-        menu,
-        text="5 - Atualizar paciente",
-        command=lambda: editar_paciente(pacientes)
-    )
-
-    botao_editar.pack()
 
     # BOTÃO SAIR
     botao_sair = tk.Button(
@@ -207,7 +180,7 @@ def entrar():
         command=menu.destroy
     )
 
-    botao_sair.pack()
+    botao_sair.pack(pady=10)
 
 
 # ---------------- MAIN ----------------
@@ -216,7 +189,7 @@ janela = tk.Tk()
 
 janela.title("Clínica Pascoal")
 
-janela.geometry("200x100")
+janela.geometry("300x200")
 
 
 # TÍTULO
@@ -225,7 +198,7 @@ titulo = tk.Label(
     text="Clínica Pascoal"
 )
 
-titulo.pack()
+titulo.pack(pady=10)
 
 
 # TEXTO
@@ -250,7 +223,7 @@ botao_confirmar = tk.Button(
     command=entrar
 )
 
-botao_confirmar.pack()
+botao_confirmar.pack(pady=10)
 
 
 # LOOP
